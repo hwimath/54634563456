@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>어근 : 셀 수 (數) - 초등어휘 단어 게임</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #F0F8FF;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #4682B4;
+        }
+        .hidden {
+            display: none;
+        }
+        .section {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #E6F2FF;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #4682B4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 15px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #4169E1;
+        }
+        .quiz-option {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        #score {
+            font-size: 24px;
+            color: #32CD32;
+        }
+        #incorrectAnswers {
+            text-align: left;
+            margin-top: 20px;
+        }
+        #incorrectAnswers p {
+            color: #FF4500;
+        }
+    </style>
+</head>
+<body>
+
+<h1>✨ 어근 : 셀 수 (數) - 초등어휘 단어 게임 ✨</h1>
+
+<div id="studySection" class="section">
+    <div id="studyContent">
+        <!-- Study content will be injected here -->
+    </div>
+    <button class="button" id="nextStudyBtn">다음</button>
+</div>
+
+<div id="quizSection" class="section hidden">
+    <h2>단어 퀴즈</h2>
+    <div id="quizContent">
+        <!-- Quiz content will be injected here -->
+    </div>
+    <button class="button" id="nextQuizBtn">다음</button>
+    <button class="button hidden" id="submitQuizBtn">제출</button>
+</div>
+
+<div id="scoreSection" class="section hidden">
+    <h2>🎉 점수 🎉</h2>
+    <p id="score">0 / 10</p>
+    <div id="incorrectAnswers">
+        <!-- Incorrect answers will be displayed here -->
+    </div>
+    <button class="button" onclick="location.reload()">다시 하기</button>
+</div>
+
+<script>
+// 데이터 정의
+const words = [
+    { word: "수학", definition: "숫자와 계산을 배우는 학문." },
+    { word: "수치", definition: "숫자로 나타낸 값이나 수." },
+    { word: "수량", definition: "물건이나 양의 수." },
+    { word: "수열", definition: "규칙적으로 나열된 숫자들의 배열." },
+    { word: "수식", definition: "수학에서 사용하는 기호나 식." },
+    { word: "수사", definition: "수를 나타내는 말이나 단어." },
+    { word: "수분", definition: "몇 분 정도의 짧은 시간." },
+    { word: "수백", definition: "몇 백 정도의 수." },
+    { word: "수천", definition: "몇 천 정도의 수." },
+    { word: "수만", definition: "몇 만 정도의 수." }
+];
+
+const sentences = {
+    "수학": [
+        "그는 수학을 좋아한다.",
+        "오늘 수학 숙제를 해야 한다.",
+        "수학 시간에 새로운 내용을 배웠다."
+    ],
+    "수치": [
+        "이 수치는 매우 중요하다.",
+        "정확한 수치를 확인해 주세요.",
+        "기온의 수치가 높아졌다."
+    ],
+    "수량": [
+        "상품의 수량을 확인했다.",
+        "필요한 수량만큼 주문했다.",
+        "수량이 부족하다."
+    ],
+    "수열": [
+        "선생님이 수열 문제를 내셨다.",
+        "수열의 규칙을 찾아보자.",
+        "이 수열은 어떤 패턴일까?"
+    ],
+    "수식": [
+        "그는 복잡한 수식을 풀었다.",
+        "수학 시험에 수식이 많이 나왔다.",
+        "수식을 이해하기 어렵다."
+    ],
+    "수사": [
+        "\"하나\", \"둘\", \"셋\"은 수사이다.",
+        "수사를 배워서 숫자를 셀 수 있다.",
+        
+    ],
+    "수분": [
+        "수분만 기다려 주세요.",
+        "그는 수분 후에 도착할 것이다.",
+        "수분 안에 끝내겠습니다."
+    ],
+    "수백": [
+        "수백 마리의 새가 날아갔다.",
+        "수백 명의 사람들이 모였다.",
+        "수백 권의 책이 있다."
+    ],
+    "수천": [
+        "수천 개의 별이 빛난다.",
+        "수천 명의 관객이 모였다.",
+        "수천 마리의 물고기가 헤엄친다."
+    ],
+    "수만": [
+        "수만 명의 사람들이 참여했다.",
+        "수만 가지의 색상이 있다.",
+        "수만 개의 별이 밤하늘을 수놓았다."
+    ]
+};
+
+const quizQuestions = [
+    {
+        question: "1. 그는 ____을 좋아한다.",
+        options: ["수량", "수학"],
+        correctAnswer: "수학"
+    },
+    {
+        question: "2. 정확한 ____를 확인해 주세요.",
+        options: ["수식", "수치"],
+        correctAnswer: "수치"
+    },
+    {
+        question: "3. 상품의 ____을 확인했다.",
+        options: ["수량", "수분"],
+        correctAnswer: "수량"
+    },
+    {
+        question: "4. 선생님이 ____ 문제를 내셨다.",
+        options: ["수열", "수사"],
+        correctAnswer: "수열"
+    },
+    {
+        question: "5. 그는 복잡한 ____을 풀었다.",
+        options: ["수사", "수식"],
+        correctAnswer: "수식"
+    },
+    {
+        question: "6. \"하나\", \"둘\", \"셋\"은 ____이다.",
+        options: ["수사", "수분"],
+        correctAnswer: "수사"
+    },
+    {
+        question: "7. ____만 기다려 주세요.",
+        options: ["수백", "수분"],
+        correctAnswer: "수분"
+    },
+    {
+        question: "8. ____ 마리의 새가 날아갔다.",
+        options: ["수천", "수백"],
+        correctAnswer: "수백"
+    },
+    {
+        question: "9. ____ 명의 관객이 모였다.",
+        options: ["수만", "수천"],
+        correctAnswer: "수천"
+    },
+    {
+        question: "10. ____ 명의 사람들이 참여했다.",
+        options: ["수만", "수천"],
+        correctAnswer: "수만"
+    }
+];
+
+// 상태 변수
+let currentWordIndex = 0;
+let currentQuizIndex = 0;
+let score = 0;
+let incorrectAnswers = [];
+
+// 초기화 함수
+function showDefinition() {
+    if (currentWordIndex < words.length) {
+        const word = words[currentWordIndex];
+        document.getElementById('studyContent').innerHTML = `
+            <h2>단어 뜻 배우기 (어근: 셀 수)</h2>
+            <h3>${word.word}</h3>
+            <p>${word.definition}</p>
+        `;
+    } else {
+        // 모든 단어 학습이 끝나면 퀴즈 시작
+        document.getElementById('studySection').classList.add('hidden');
+        initQuiz();
+        document.getElementById('quizSection').classList.remove('hidden');
+    }
+}
+
+function showSentences() {
+    const word = words[currentWordIndex];
+    const sentenceList = sentences[word.word];
+    let sentencesHTML = `<h2>예문 배우기 (어근: 셀 수)</h2><h3>${word.word}</h3>`;
+    sentenceList.forEach(sentence => {
+        sentencesHTML += `<p>• ${sentence}</p>`;
+    });
+    document.getElementById('studyContent').innerHTML = sentencesHTML;
+}
+
+// 버튼 이벤트 리스너
+document.getElementById('nextStudyBtn').addEventListener('click', () => {
+    if (document.getElementById('studyContent').innerHTML.includes('단어 뜻 배우기')) {
+        showSentences();
+    } else {
+        currentWordIndex++;
+        showDefinition();
+    }
+});
+
+// 옵션 섞기 함수
+function shuffleOptions(options) {
+    let shuffled = options.slice(); // 복사본 생성
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// 퀴즈 함수
+function initQuiz() {
+    if (currentQuizIndex < quizQuestions.length) {
+        const q = quizQuestions[currentQuizIndex];
+        const shuffledOptions = shuffleOptions(q.options);
+        document.getElementById('quizContent').innerHTML = `
+            <p>${q.question}</p>
+            ${shuffledOptions.map((option, index) => `
+                <label class="quiz-option">
+                    <input type="radio" name="quiz${currentQuizIndex}" value="${option}">
+                    ${option}
+                </label>
+            `).join('')}
+        `;
+        // Toggle buttons
+        if (currentQuizIndex === quizQuestions.length - 1) {
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+            document.getElementById('submitQuizBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        }
+    }
+}
+
+document.getElementById('nextQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        } else {
+            incorrectAnswers.push({
+                question: q.question,
+                yourAnswer: selected.value,
+                correctAnswer: q.correctAnswer
+            });
+        }
+        currentQuizIndex++;
+        initQuiz();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+document.getElementById('submitQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        } else {
+            incorrectAnswers.push({
+                question: q.question,
+                yourAnswer: selected.value,
+                correctAnswer: q.correctAnswer
+            });
+        }
+        currentQuizIndex++;
+        showScore();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+function showScore() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('score').innerText = `${score} / ${quizQuestions.length}`;
+    if (incorrectAnswers.length > 0) {
+        let incorrectHTML = "<h3>틀린 문제</h3>";
+        incorrectAnswers.forEach(item => {
+            incorrectHTML += `
+                <p><strong>문제:</strong> ${item.question}</p>
+                <p><strong>당신의 답:</strong> ${item.yourAnswer}</p>
+                <p><strong>정답:</strong> ${item.correctAnswer}</p>
+                <hr>
+            `;
+        });
+        document.getElementById('incorrectAnswers').innerHTML = incorrectHTML;
+    } else {
+        document.getElementById('incorrectAnswers').innerHTML = "<p>모든 문제를 맞추셨습니다! 훌륭해요! 🎉</p>";
+    }
+    document.getElementById('scoreSection').classList.remove('hidden');
+}
+
+// 초기화 시작
+showDefinition();
+</script>
+
+</body>
+</html>
